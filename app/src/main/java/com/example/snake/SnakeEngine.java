@@ -66,5 +66,33 @@ class SnakeEngine extends SurfaceView implements Runnable {
         screenX = size.x;
         screenY = size.y;
 
+        // Get some more dimensions based on the screen size
+        blockSize = screenX / NUM_BLOCKS_WIDE;
+        numBlocksHigh = screenY / blockSize;
+
+        // Set the sound up
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        try {
+            AssetManager assetManager = context.getAssets();
+            AssetFileDescriptor descriptor;
+
+            // Get the sounds saved to a variable
+            descriptor = assetManager.openFd("eat_bob.ogg");
+            eat_bob = soundPool.load(descriptor, 0);
+            descriptor = assetManager.openFd("snake_crash.ogg");
+            snake_crash = soundPool.load(descriptor, 0);
+
+        } catch (IOException e) {}
+
+        // Create drawing objects
+        surfaceHolder = getHolder();
+        paint = new Paint();
+
+        // Max snake size/score of 200
+        snakeXs = new int[200];
+        snakeYs = new int[200];
+
+        // Start now that everything is loaded
+        newGame();
     }
 }
