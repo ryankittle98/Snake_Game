@@ -92,7 +92,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
         snakeXs = new int[200];
         snakeYs = new int[200];
 
-        // Start now that everything is loaded
+        // Start now since everything is loaded
         newGame();
     }
 }
