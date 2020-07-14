@@ -123,4 +123,26 @@ class SnakeEngine extends SurfaceView implements Runnable {
         thread = new Thread(this);
         thread.start();
     }
+
+    public void newGame() {
+        // Start snake with one section, centered on screen
+        snakeLength = 1;
+        snakeXs[0] = NUM_BLOCKS_WIDE / 2;
+        snakeYs[0] = numBlocksHigh / 2;
+
+        // Create initial food
+        spawnBob();
+
+        // Make sure the score starts at 0
+        score = 0;
+
+        // Setup nextFrameTime so an update is triggered
+        nextFrameTime = System.currentTimeMillis();
+    }
+
+    public void spawnBob() {
+        Random randomNum = new Random();
+        bobX = randomNum.nextInt(NUM_BLOCKS_WIDE - 1) + 1;
+        bobY = randomNum.nextInt(numBlocksHigh - 1) + 1;
+    }
 }
