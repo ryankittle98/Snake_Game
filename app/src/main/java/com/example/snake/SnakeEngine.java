@@ -1,3 +1,5 @@
+package com.example.snake;
+
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Point;
@@ -94,5 +96,31 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
         // Start now since everything is loaded
         newGame();
+    }
+
+    @Override
+    public void run() {
+        while (isPlaying)
+        {
+            // Only update 10x per second, following the 10 FPS set earlier
+            if(updateRequired())
+            {
+                update();
+                draw();
+            }
+        }
+    }
+
+    public void pause() {
+        isPlaying = false;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {}
+    }
+
+    public void resume() {
+        isPlaying = true;
+        thread = new Thread(this);
+        thread.start();
     }
 }
