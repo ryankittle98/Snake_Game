@@ -143,6 +143,18 @@ class SnakeEngine extends SurfaceView implements Runnable {
     public void spawnBob() {
         Random randomNum = new Random();
         bobX = randomNum.nextInt(NUM_BLOCKS_WIDE - 1) + 1;
-        bobY = randomNum.nextInt(numBlocksHigh - 1) + 1;
+        bobY = randomNum.nextInt(numBlocksHigh - 2) + 1;
+    }
+
+    private void eatBob() {
+        // Make the snake longer
+        snakeLength++;
+
+        // Make a new Bob
+        spawnBob();
+
+        //add to the score
+        score++;
+        soundPool.play(eat_bob, 1, 1, 0, 0, 1);
     }
 }

@@ -3,7 +3,6 @@ package com.example.snake;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.graphics.Point;
-import android.os.Bundle;
 import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         // Create instance of the SnakeEngine class using
         // this context and the screen dimensions
         snakeEngine = new SnakeEngine(this, size);
-
         // Set the instance as the view
         setContentView(snakeEngine);
     }
