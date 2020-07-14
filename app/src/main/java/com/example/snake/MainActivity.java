@@ -40,3 +40,5 @@ public class MainActivity extends AppCompatActivity {
         snakeEngine.pause();
     }
 }
+
+// test comment
