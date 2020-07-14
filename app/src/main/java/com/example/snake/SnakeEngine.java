@@ -157,4 +157,51 @@ class SnakeEngine extends SurfaceView implements Runnable {
         score++;
         soundPool.play(eat_bob, 1, 1, 0, 0, 1);
     }
+
+    private void moveSnake() {
+        for (int i = snakeLength; i > 0; i--) {
+            // Start at the back and move each section to the next one's location
+            snakeXs[i] = snakeXs[i - 1];
+            snakeYs[i] = snakeYs[i - 1];
+        }
+
+        // Move the head (front) in the appropriate direction
+        switch (heading) {
+            case UP:
+                snakeYs[0]--;
+                break;
+
+            case RIGHT:
+                snakeXs[0]++;
+                break;
+
+            case DOWN:
+                snakeYs[0]++;
+                break;
+
+            case LEFT:
+                snakeXs[0]--;
+                break;
+        }
+    }
+
+    private boolean detectDeath() {
+        // Set to false initially
+        boolean dead = false;
+
+        // If it hits the edge of the screen, dead
+        if (snakeXs[0] == -1 ||
+            snakeYs[0] == -1 ||
+            snakeXs[0] >= NUM_BLOCKS_WIDE ||
+            snakeYs[0] == numBlocksHigh)
+                dead = true;
+
+        // If it hits itself, dead
+        for (int i = snakeLength - 1; i > 0; i--) {
+            if ((i > 4) && (snakeXs[0] == snakeXs[i]) && (snakeYs[0] == snakeYs[i]))
+                dead = true;
+        }
+
+        return dead;
+    }
 }
