@@ -26,8 +26,8 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
     // Sound effects
     private SoundPool soundPool;
-    private int eat_bob = -1;
-    private int snake_crash = -1;
+    private int eat_food_sound = -1;
+    private int snake_crash_sound = -1;
 
     // Snake information
     public enum Direction {UP, RIGHT, DOWN, LEFT} // Direction
@@ -37,9 +37,9 @@ class SnakeEngine extends SurfaceView implements Runnable {
     private int[] snakeXs; //Location of each snake section
     private int[] snakeYs;
 
-    // Bob location
-    private int bobX;
-    private int bobY;
+    // Food location
+    private int foodX;
+    private int foodY;
 
     // Canvas size for playing area
     private Canvas canvas;
@@ -80,9 +80,9 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
             // Get the sounds saved to a variable
             descriptor = assetManager.openFd("eat_bob.ogg");
-            eat_bob = soundPool.load(descriptor, 0);
+            eat_food_sound = soundPool.load(descriptor, 0);
             descriptor = assetManager.openFd("snake_crash.ogg");
-            snake_crash = soundPool.load(descriptor, 0);
+            snake_crash_sound = soundPool.load(descriptor, 0);
 
         } catch (IOException e) {}
 
@@ -127,11 +127,12 @@ class SnakeEngine extends SurfaceView implements Runnable {
     public void newGame() {
         // Start snake with one section, centered on screen
         snakeLength = 1;
+        snakeDirection = Direction.RIGHT;
         snakeXs[0] = NUM_BLOCKS_WIDE / 2;
         snakeYs[0] = numBlocksHigh / 2;
 
         // Create initial food
-        spawnBob();
+        spawnFood();
 
         // Make sure the score starts at 0
         score = 0;
@@ -140,22 +141,22 @@ class SnakeEngine extends SurfaceView implements Runnable {
         nextFrameTime = System.currentTimeMillis();
     }
 
-    public void spawnBob() {
+    public void spawnFood() {
         Random randomNum = new Random();
-        bobX = randomNum.nextInt(NUM_BLOCKS_WIDE - 1) + 1;
-        bobY = randomNum.nextInt(numBlocksHigh - 2) + 1;
+        foodX = randomNum.nextInt(NUM_BLOCKS_WIDE - 1) + 1;
+        foodY = randomNum.nextInt(numBlocksHigh - 2) + 1;
     }
 
-    private void eatBob() {
+    private void eatFood() {
         // Make the snake longer
         snakeLength++;
 
-        // Make a new Bob
-        spawnBob();
+        // Make new Food
+        spawnFood();
 
         //add to the score
         score++;
-        soundPool.play(eat_bob, 1, 1, 0, 0, 1);
+        soundPool.play(eat_food_sound, 1, 1, 0, 0, 1);
     }
 
     private void moveSnake() {
@@ -207,15 +208,15 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
     public void update() {
         // If the snake eats food
-        if (snakeXs[0] == bobX && snakeYs[0] == bobY) {
-            eatBob();
+        if (snakeXs[0] == foodX && snakeYs[0] == foodY) {
+            eatFood();
         }
 
         moveSnake();
 
         if (detectDeath()) {
             // If snake dies, play the sound and restart the game
-            soundPool.play(snake_crash, 1, 1, 0, 0, 1);
+            soundPool.play(snake_crash_sound, 1, 1, 0, 0, 1);
 
             newGame();
         }
@@ -229,14 +230,14 @@ class SnakeEngine extends SurfaceView implements Runnable {
             // Fill background with light green color
             canvas.drawColor(Color.argb(255, 144, 238, 144));
 
-            // Set paint to red for bob color
+            // Set paint to red for food color
             paint.setColor(Color.argb(255, 255, 0, 0));
 
-            // Draw Bob
-            canvas.drawRect(bobX * blockSize,
-                    (bobY * blockSize),
-                    (bobX * blockSize) + blockSize,
-                    (bobY * blockSize) + blockSize,
+            // Draw food
+            canvas.drawRect(foodX * blockSize,
+                    (foodY * blockSize),
+                    (foodX * blockSize) + blockSize,
+                    (foodY * blockSize) + blockSize,
                     paint);
 
             // Set paint to white for snake/score header color
