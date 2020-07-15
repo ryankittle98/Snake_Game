@@ -2,9 +2,14 @@ package com.example.snake;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.RectF;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,6 +19,7 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.widget.ImageView;
 
 
 class SnakeEngine extends SurfaceView implements Runnable {
@@ -55,6 +61,9 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
     // Player score (points)
     private int score;
+
+    // Settings icon bitmap
+    private Bitmap settings = BitmapFactory.decodeResource(getResources(), R.drawable.settings_icon_white);
 
     // Is the player currently playing?
     private volatile boolean isPlaying;
@@ -243,10 +252,13 @@ class SnakeEngine extends SurfaceView implements Runnable {
             // Set paint to white for snake/score header color
             paint.setColor(Color.argb(255, 255, 255, 255));
 
+            // Draw settings icon
+            canvas.drawBitmap(settings, screenX - (settings.getWidth()/0.75f), settings.getWidth()/3f, paint);
+
             // Create score header in middle of screen
             paint.setTextSize(90);
             float scoreOffset = paint.measureText("Score: ");
-            canvas.drawText("Score: " + score, (screenX/2f) - (scoreOffset/2), 100, paint);
+            canvas.drawText("Score: " + score, (screenX/2f) - (scoreOffset/2), (settings.getWidth()*.9f), paint);
 
             // Draw each section of the snake, one at a time
             for (int i = 0; i < snakeLength; i++)
@@ -278,12 +290,32 @@ class SnakeEngine extends SurfaceView implements Runnable {
             return false;
     }
 
+    public void openSettings()
+    {
+        if (isPlaying)
+        {
+            pause();
+        }
+        else
+        {
+            resume();
+        }
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+
             case MotionEvent.ACTION_UP:
-                if (motionEvent.getX() >= screenX / 2) {
+                if (motionEvent.getX() > screenX - (settings.getWidth()/0.75f) &&
+                    motionEvent.getX() < screenX - (settings.getWidth()/0.75f) + settings.getWidth() &&
+                    motionEvent.getY() > settings.getWidth()/3f &&
+                    motionEvent.getY() < settings.getWidth()/3f + settings.getWidth())
+                        openSettings();
+
+                else if (motionEvent.getX() >= screenX / 2)
+                {
                     switch(snakeDirection){
                         case UP:
                             snakeDirection = Direction.RIGHT;
@@ -298,7 +330,9 @@ class SnakeEngine extends SurfaceView implements Runnable {
                             snakeDirection = Direction.UP;
                             break;
                     }
-                } else {
+                }
+                else
+                {
                     switch(snakeDirection){
                         case UP:
                             snakeDirection = Direction.LEFT;
