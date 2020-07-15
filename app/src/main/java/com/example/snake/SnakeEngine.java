@@ -204,4 +204,76 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
         return dead;
     }
+
+    public void update() {
+        // If the snake eats food
+        if (snakeXs[0] == bobX && snakeYs[0] == bobY) {
+            eatBob();
+        }
+
+        moveSnake();
+
+        if (detectDeath()) {
+            // If snake dies, play the sound and restart the game
+            soundPool.play(snake_crash, 1, 1, 0, 0, 1);
+
+            newGame();
+        }
+    }
+
+    public void draw() {
+        // Lock the canvas
+        if (surfaceHolder.getSurface().isValid()) {
+            canvas = surfaceHolder.lockCanvas();
+
+            // Fill background with light green color
+            canvas.drawColor(Color.argb(255, 144, 238, 144));
+
+            // Set paint to white for snake color
+            paint.setColor(Color.argb(255, 255, 255, 255));
+
+            // Create score header in middle of screen
+            paint.setTextSize(90);
+            float scoreOffset = paint.measureText("Score: ");
+            canvas.drawText("Score: " + score, (screenX/2) - (scoreOffset/2), 100, paint);
+
+            // Draw each section of the snake, one at a time
+            for (int i = 0; i < snakeLength; i++)
+            {
+                canvas.drawRect(snakeXs[i] * blockSize,
+                        (snakeYs[i] * blockSize),
+                        (snakeXs[i] * blockSize) + blockSize,
+                        (snakeYs[i] * blockSize) + blockSize,
+                        paint);
+            }
+
+            // Set paint to red for bob color
+            paint.setColor(Color.argb(255, 255, 0, 0));
+
+            // Draw Bob
+            canvas.drawRect(bobX * blockSize,
+                    (bobY * blockSize),
+                    (bobX * blockSize) + blockSize,
+                    (bobY * blockSize) + blockSize,
+                    paint);
+
+            // Unlock the canvas so the scene can be drawn
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public boolean updateRequired() {
+
+        // If the system time has passed the time to update the scene
+        if(nextFrameTime <= System.currentTimeMillis()){
+            // Set next update time based on FPS
+            nextFrameTime =System.currentTimeMillis() + MILLIS_PER_SECOND / FPS;
+
+            // Return true to call update() and draw() methods
+            return true;
+        }
+        // If not enough time has passed to require an update, return false
+        else
+            return false;
+    }
 }
