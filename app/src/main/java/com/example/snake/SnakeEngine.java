@@ -30,8 +30,8 @@ class SnakeEngine extends SurfaceView implements Runnable {
     private int snake_crash = -1;
 
     // Snake information
-    public enum Heading {UP, RIGHT, DOWN, LEFT} // Direction
-    private Heading heading = Heading.RIGHT;
+    public enum Direction {UP, RIGHT, DOWN, LEFT} // Direction
+    private Direction snakeDirection = Direction.RIGHT;
     private int snakeLength; // How long is the snake
     private int blockSize; // How large (in pixels) is each snake section
     private int[] snakeXs; //Location of each snake section
@@ -166,7 +166,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
         }
 
         // Move the head (front) in the appropriate direction
-        switch (heading) {
+        switch (snakeDirection) {
             case UP:
                 snakeYs[0]--;
                 break;
@@ -198,7 +198,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 
         // If it hits itself, dead
         for (int i = snakeLength - 1; i > 0; i--) {
-            if ((i > 4) && (snakeXs[0] == snakeXs[i]) && (snakeYs[0] == snakeYs[i]))
+            if (snakeXs[0] == snakeXs[i] && snakeYs[0] == snakeYs[i])
                 dead = true;
         }
 
@@ -229,13 +229,23 @@ class SnakeEngine extends SurfaceView implements Runnable {
             // Fill background with light green color
             canvas.drawColor(Color.argb(255, 144, 238, 144));
 
-            // Set paint to white for snake color
+            // Set paint to red for bob color
+            paint.setColor(Color.argb(255, 255, 0, 0));
+
+            // Draw Bob
+            canvas.drawRect(bobX * blockSize,
+                    (bobY * blockSize),
+                    (bobX * blockSize) + blockSize,
+                    (bobY * blockSize) + blockSize,
+                    paint);
+
+            // Set paint to white for snake/score header color
             paint.setColor(Color.argb(255, 255, 255, 255));
 
             // Create score header in middle of screen
             paint.setTextSize(90);
             float scoreOffset = paint.measureText("Score: ");
-            canvas.drawText("Score: " + score, (screenX/2) - (scoreOffset/2), 100, paint);
+            canvas.drawText("Score: " + score, (screenX/2f) - (scoreOffset/2), 100, paint);
 
             // Draw each section of the snake, one at a time
             for (int i = 0; i < snakeLength; i++)
@@ -246,16 +256,6 @@ class SnakeEngine extends SurfaceView implements Runnable {
                         (snakeYs[i] * blockSize) + blockSize,
                         paint);
             }
-
-            // Set paint to red for bob color
-            paint.setColor(Color.argb(255, 255, 0, 0));
-
-            // Draw Bob
-            canvas.drawRect(bobX * blockSize,
-                    (bobY * blockSize),
-                    (bobX * blockSize) + blockSize,
-                    (bobY * blockSize) + blockSize,
-                    paint);
 
             // Unlock the canvas so the scene can be drawn
             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -275,5 +275,45 @@ class SnakeEngine extends SurfaceView implements Runnable {
         // If not enough time has passed to require an update, return false
         else
             return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_UP:
+                if (motionEvent.getX() >= screenX / 2) {
+                    switch(snakeDirection){
+                        case UP:
+                            snakeDirection = Direction.RIGHT;
+                            break;
+                        case RIGHT:
+                            snakeDirection = Direction.DOWN;
+                            break;
+                        case DOWN:
+                            snakeDirection = Direction.LEFT;
+                            break;
+                        case LEFT:
+                            snakeDirection = Direction.UP;
+                            break;
+                    }
+                } else {
+                    switch(snakeDirection){
+                        case UP:
+                            snakeDirection = Direction.LEFT;
+                            break;
+                        case LEFT:
+                            snakeDirection = Direction.DOWN;
+                            break;
+                        case DOWN:
+                            snakeDirection = Direction.RIGHT;
+                            break;
+                        case RIGHT:
+                            snakeDirection = Direction.UP;
+                            break;
+                    }
+                }
+        }
+        return true;
     }
 }

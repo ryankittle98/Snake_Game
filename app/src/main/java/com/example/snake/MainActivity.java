@@ -1,6 +1,8 @@
 package com.example.snake;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.graphics.Point;
 import android.view.Display;
@@ -24,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         // Then save the values as a Point object, ie size
         Point size = new Point();
-        display.getSize(size);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            display.getRealSize(size);
+        else
+            display.getSize(size);
 
         // Create instance of the SnakeEngine class using
         // this context and the screen dimensions
