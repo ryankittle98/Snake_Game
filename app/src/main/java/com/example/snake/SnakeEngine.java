@@ -24,7 +24,7 @@ import android.widget.ImageView;
 
 class SnakeEngine extends SurfaceView implements Runnable {
     private Thread thread = null; // This is the thread for the main game's looping
-    private Context context; // To reference the activity
+    private Context gameContext; // To reference the activity
 
     // To hold the screen size in pixels
     private int screenX;
@@ -71,7 +71,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
     public SnakeEngine(Context context, Point size) {
         // Initialize the context
         super(context);
-        context = context;
+        gameContext = context;
 
         // Get screen dimensions from passed variable
         screenX = size.x;
